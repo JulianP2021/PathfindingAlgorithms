@@ -28,6 +28,12 @@
  */
 
 import './index.css';
+import { generate } from './Maze/Maze';
+import { solveDijkstra } from './SolvingAlgorithms/Dijkstra/dijkstra';
+import { solveAStar } from './SolvingAlgorithms/A-Star/a-star';
+import { solveBFS } from './SolvingAlgorithms/BFS/bfs';
+import { solveDFS } from './SolvingAlgorithms/DFS/dfs';
+
 
 const canvas = document.getElementById("maze") as HTMLCanvasElement;
 const algorithmSelect = document.getElementById("algorithm-select") as HTMLSelectElement;
@@ -40,7 +46,7 @@ let maze: number[][] = Array.from({ length: parseInt(sizeInput.value, 10) }, () 
 
 solveMazeButton.addEventListener('click', async () => {
     if (maze != null) {
-        const { path: path, steps: steps }: { path: [number, number][], steps: [number, number][] } = await (window as any).maze.solve({ algorithm: algorithmSelect.value,  maze: maze });
+        const { path: path, steps: steps }: { path: [number, number][], steps: [number, number][] } = solveMaze(algorithmSelect.value, maze);
         drawPath(path, canvas, maze.length);
         console.log(steps);
     }
@@ -73,7 +79,7 @@ const drawMaze = (maze: number[][], canvas: HTMLCanvasElement, size: number) => 
 
 generateMazeButton.addEventListener('click', async () => {
     const size = parseInt(sizeInput.value, 10); // Konvertiere den Wert von sizeInput in eine Ganzzahl
-    maze = await (window as any).maze.generate(size); // Generiere das Labyrinth
+    maze = generate(size);
     drawMaze(maze, canvas, size); // Zeichne das Labyrinth
 });
 
@@ -91,3 +97,21 @@ clearWallsButton.addEventListener('click', () => {
     maze = Array.from({ length: size }, () => Array(size).fill(0)); // Setze das Labyrinth zurück
     drawMaze(maze, canvas, size); // Zeichne das Labyrinth
 });
+
+function solveMaze(algorithm: string, maze: number[][]): { path: [number, number][], steps: [number, number][] } {
+    const {path:path, steps: steps} = (function () { switch (algorithm) {
+        case 'dfs':
+          return solveDFS(maze)
+        case 'bfs':
+          return solveBFS(maze)
+        case 'dijkstra':
+          return solveDijkstra(maze)
+        case 'a-star':
+          return solveAStar(maze)
+        default:
+          return {path: [], steps: []};
+      }
+      }) ();
+      
+      return {path:path, steps: steps}
+}
