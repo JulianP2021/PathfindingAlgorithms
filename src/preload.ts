@@ -3,12 +3,7 @@
 
 import { contextBridge, ipcRenderer } from 'electron';
 
-contextBridge.exposeInMainWorld('darkMode', {
-    toggle: () => ipcRenderer.invoke('dark-mode:toggle'),
-    system: () => ipcRenderer.invoke('dark-mode:system')
-})
-
-contextBridge.exposeInMainWorld('maze', {
-    generate: (size: number) => ipcRenderer.invoke('maze:generate', size),
-    solve: (algorithm: string): Promise<{path: [number, number][], steps: [number, number][]}> => ipcRenderer.invoke('maze:solve', algorithm)
-})
+// contextBridge.exposeInMainWorld('darkMode', {
+//     toggle: () => ipcRenderer.invoke('dark-mode:toggle'),
+//     system: () => ipcRenderer.invoke('dark-mode:system')
+// })
