@@ -58,21 +58,8 @@ const modis = {
 
 const currentModi = Object.entries(modis)[0][0]
 
+//y:x
 let maze: number[][] = Array.from({ length: parseInt(sizeInput.value, 10) }, () => Array(parseInt(sizeInput.value, 10)).fill(0));
-
-// switch (maze[row][col]) {
-//     case 1:
-//         ctx.fillStyle = 'red';
-//         break;
-//     case 2:
-//         ctx.fillStyle = 'yellow';
-//         break;
-//     case 3:
-//         ctx.fillStyle = 'green';
-//         break;
-//     default:
-//         ctx.fillStyle = 'white';
-//         break;
 
 function showSolve(){
     if (maze != null) {
@@ -139,7 +126,7 @@ function getDataFromEvent(e:MouseEvent) : [number, number, number, number, numbe
 canvas.addEventListener("click", (e:MouseEvent) => {
 
     const [size, cellHeight, cellWidth, posX, posY, colorName] = getDataFromEvent(e)
-    maze[posX][posY] =  colors[colorName as keyof typeof colors].index;
+    maze[posY][posX] =  colors[colorName as keyof typeof colors].index;
 
     drawMaze();
 });
