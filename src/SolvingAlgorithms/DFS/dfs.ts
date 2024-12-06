@@ -1,3 +1,6 @@
+import { stepToPath } from "../stepToPath";
+import { stepsType } from "../types";
+
 export function solveDFS (maze:number[][]) {
     const size = maze.length;
     let start: [number, number] = [0, 0];
@@ -17,11 +20,11 @@ export function solveDFS (maze:number[][]) {
     const visited: boolean[][] = Array.from({ length: size }, () => Array(size).fill(false));
     const previous: [number, number][][] = Array.from({ length: size }, () => Array(size).fill(null));
     const stack: [number, number][] = [];
-    const steps: [number, number][] = [];
+    const steps: stepsType = [];
     stack.push(start);
     while (stack.length > 0) {
         const [row, col] = stack.pop();
-        steps.push([row, col]);
+        steps.push({way:stepToPath(previous, [row, col]), visited:JSON.parse(JSON.stringify(visited))})
 
         if (visited[row][col]) {
             continue;

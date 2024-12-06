@@ -1,3 +1,6 @@
+import { stepToPath } from "../stepToPath";
+import { stepsType } from "../types";
+
 export function solveAStar(maze : number[][]) {
     const size = maze.length;
     let start: [number, number] = [0, 0];
@@ -14,15 +17,21 @@ export function solveAStar(maze : number[][]) {
             }
         }
     }
+    const visited: boolean[][] = Array.from({ length: size }, () => Array(size).fill(false));
     const distance: number[][] = Array.from({ length: size }, () => Array(size).fill(Infinity));
     const previous: [number, number][][] = Array.from({ length: size }, () => Array(size).fill(null));
     const queue: [number, number, number][] = [[start[0], start[1], 0]];
     distance[start[0]][start[1]] = 0;
-    const steps: [number, number][] = [];
+    const steps: stepsType = [];
     while (queue.length > 0) {
         queue.sort((a, b) => a[2] - b[2]);
+        console.log(queue)
         const [row, col, dist] = queue.shift();
-        steps.push([row, col]);
+        if (visited[row][col]) {
+            continue;
+        }
+        visited[row][col] = true
+        steps.push({way:stepToPath(previous, [row, col]), visited:JSON.parse(JSON.stringify(visited))})
         if (row === end[0] && col === end[1]) {
             break;
         }
@@ -36,7 +45,7 @@ export function solveAStar(maze : number[][]) {
             if (r < 0 || c < 0 || r >= size || c >= size || maze[r][c] === 1) {
                 continue;
             }
-            const newDist = dist + Math.abs(r - end[0]) + Math.abs(c - end[1]);
+            const newDist = dist + Math.pow(10,Math.abs(r - end[0]) + Math.abs(c - end[1]));
             if (newDist < distance[r][c]) {
                 distance[r][c] = newDist;
                 previous[r][c] = [row, col];

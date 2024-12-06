@@ -1,3 +1,6 @@
+import { stepToPath } from "../stepToPath";
+import { stepsType } from "../types";
+
 export function solveDijkstra(maze: number[][]) {
     const size = maze.length;
     let start: [number, number] = [0, 0];
@@ -19,11 +22,11 @@ export function solveDijkstra(maze: number[][]) {
     const previous: [number, number][][] = Array.from({ length: size }, () => Array(size).fill(null));
     const queue: [number, number, number][] = [[start[0], start[1], 0]];
     distance[start[0]][start[1]] = 0;
-    const steps: [number, number][] = [];
+    const steps: stepsType = [];
     while (queue.length > 0) {
         queue.sort((a, b) => a[2] - b[2]);
         const [row, col, dist] = queue.shift();
-        steps.push([row, col]);
+        steps.push({way:stepToPath(previous, [row, col]), visited:JSON.parse(JSON.stringify(visited))})
         if (visited[row][col]) {
             continue;
         }

@@ -14,10 +14,11 @@
     <button id="clear-walls">Clear walls</button>
   </div>
   <div class="center">
-    <select id="modi">
+    <select id="modi-select">
       <option value="drawWalls">draw Walls</option>
       <option value="drawStart">draw Start</option>
       <option value="drawTarget">draw Target</option>
+      <option value="eraseWalls">erase Target</option>
     </select>
   </div>
   <div class="center">
@@ -42,8 +43,6 @@
     </select>
   </div>
 
-  <p id="p1"></p>
-  <p id="p2"></p>
   <canvas id="maze"></canvas>
   <script type="module" src="/src/renderer.ts"></script>
 </body>

@@ -1,3 +1,6 @@
+import { stepToPath } from "../stepToPath";
+import { stepsType } from "../types";
+
 export function solveBFS(maze: number[][]) {
     const size = maze.length;
     let start: [number, number] = [0, 0];
@@ -17,10 +20,10 @@ export function solveBFS(maze: number[][]) {
     const visited: boolean[][] = Array.from({ length: size }, () => Array(size).fill(false));
     const previous: [number, number][][] = Array.from({ length: size }, () => Array(size).fill(null));
     const queue: [number, number][] = [[start[0], start[1]]];
-    const steps: [number, number][] = [];
+    const steps: stepsType = [];
     while (queue.length > 0) {
         const [row, col] = queue.shift();
-        steps.push([row, col]);
+        steps.push({way:stepToPath(previous, [row, col]), visited:JSON.parse(JSON.stringify(visited))})
         if (visited[row][col]) {
             continue;
         }
@@ -46,7 +49,6 @@ export function solveBFS(maze: number[][]) {
     }
     const path = [];
     let current = end;
-
 
     while (current) {
         path.unshift(current);

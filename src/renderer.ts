@@ -33,39 +33,176 @@ import { solveDijkstra } from './SolvingAlgorithms/Dijkstra/dijkstra';
 import { solveAStar } from './SolvingAlgorithms/A-Star/a-star';
 import { solveBFS } from './SolvingAlgorithms/BFS/bfs';
 import { solveDFS } from './SolvingAlgorithms/DFS/dfs';
+import { stepsType } from './SolvingAlgorithms/types';
 
 
 const canvas = document.getElementById("maze") as HTMLCanvasElement;
 const algorithmSelect = document.getElementById("algorithm-select") as HTMLSelectElement;
+const modiSelect = document.getElementById("modi-select") as HTMLSelectElement;
 const sizeInput = document.getElementById("size-input") as HTMLInputElement;
 const generateMazeButton = document.getElementById("generate-maze") as HTMLButtonElement;
 const clearWallsButton = document.getElementById("clear-walls") as HTMLButtonElement;
 const solveMazeButton = document.getElementById("solve-maze") as HTMLButtonElement;
 
+const sleepNow = (delay:number) => new Promise((resolve) => setTimeout(resolve, delay))
+
 const colors = {
-    white: {index: 0, "rgb":[255, 255, 255]},
-    red: {index: 1, "rgb":[255, 0, 0]},
-    yellow: {index: 2, "rgb":[255, 255, 0]},
-    green: {index: 3, "rgb":[0, 255, 255]}
+    cleanColor: {index: 0, "rgb":[255, 255, 255], rgbString: "rgb(255, 255, 255)", stringVal: "white"},
+    wallColor: {index: 1, "rgb":[255, 0, 0], rgbString: "rgb(255, 0, 0)", stringVal: "red"},
+    startColor: {index: 2, "rgb":[255, 255, 0], rgbString: "rgb(255, 255, 0)", stringVal: "yellow"},
+    endColor: {index: 3, "rgb":[0, 255, 0], rgbString: "rgb(0, 255, 0)", stringVal: "green"},
+    algColor: {index: 4, "rgb":[0, 0, 255], rgbString: "rgb(0, 0, 255)", stringVal: "blue"},
+    hoverColor: {index: 5, "rgb":[0, 138, 255], rgbString: "rgba(0, 138, 255, 0.3)", stringVal: "Not defined"},
+    visitedColor: {index: 6, "rgb":[0, 50, 25], rgbString: "rgba(0, 50, 25, 0.3)", stringVal: "Not defined"}
+    
 }
 
 const modis = {
-    drawWalls: "red",
-    drawStart: "white",
-    drawEnd: "yellow",
-    eraseWalls: "white"
+    drawWalls: "wallColor",
+    drawStart: "startColor",
+    drawTarget: "endColor",
+    eraseWalls: "cleanColor"
 }
 
-const currentModi = Object.entries(modis)[0][0]
+let currentModi = Object.entries(modis)[0][0]
 
 //y:x
-let maze: number[][] = Array.from({ length: parseInt(sizeInput.value, 10) }, () => Array(parseInt(sizeInput.value, 10)).fill(0));
+//let maze = Array.from({ length: getSize() }, () => Array(getSize()).fill(0));
 
-function showSolve(){
+let maze: number[][] = [
+    [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    [
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1
+    ],
+    [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+    ],
+    [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+    ],
+    [
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0
+    ],
+    [
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0,
+        0
+    ],
+    [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ]
+]
+
+async function showSolve(){
     if (maze != null) {
-        const { path: path, steps: steps }: { path: [number, number][], steps: [number, number][] } = solveMaze(algorithmSelect.value, maze);
+        const { path: path, steps: steps }: { path: [number, number][], steps: stepsType } = solveMaze(algorithmSelect.value, maze);
+
+        for(let step of steps){
+            drawPath(step.way, canvas, maze.length)
+            drawVisited(step.visited, canvas, maze.length)
+            await sleepNow(50)
+            drawMaze()
+        }
         drawPath(path, canvas, maze.length);
-        console.log(steps);
     }
 }
 
@@ -74,7 +211,7 @@ solveMazeButton.addEventListener('click', async () => {
 });
 
 function getColorFromIndex(index: number){
-    return Object.entries(colors)[index][0]
+    return Object.entries(colors)[index][1].rgbString
 }
 
 const drawMaze = () => {
@@ -96,16 +233,50 @@ function getSize() {
 }
 
 generateMazeButton.addEventListener('click', async () => {
-    const size = getSize(); // Konvertiere den Wert von sizeInput in eine Ganzzahl
+    const size = getSize();
     maze = generate(size);
-    drawMaze(); // Zeichne das Labyrinth
+    drawMaze();
 });
+
+function getColorFromPixelData(data: Uint8ClampedArray) {
+    
+    let color = null;
+    for(const [key, value] of Object.entries(colors)){
+        let count = 0;
+        for(let i = 0;i<value.rgb.length;i++){
+            if(value.rgb[i] == data[i])
+                count++;
+        }
+        if(count == value.rgb.length){
+            color = value.rgb;
+        }
+        
+    }
+    return color;
+}
+
+const drawVisited = (visited: boolean[][], canvas: HTMLCanvasElement, size: number) => {
+    const cellHeight = canvas.height / size;
+    const cellWidth = canvas.width / size;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = colors.visitedColor.rgbString;
+    for(let i = 0;i<size; i++) {
+        for(let j = 0;j<size; j++) {
+            if(getColorFromPixelData(ctx.getImageData(i * cellWidth + cellWidth/2, j * cellHeight + cellHeight/2, 1, 1).data) == colors.cleanColor.rgb && visited[j][i]){
+                ctx.fillRect(i * cellWidth, j * cellHeight, cellWidth, cellHeight);
+            }
+                
+        }
+    }
+}
+
+
 
 const drawPath = (path: [number, number][], canvas: HTMLCanvasElement, size: number) => {
     const cellHeight = canvas.height / size;
     const cellWidth = canvas.width / size;
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'blue';
+    ctx.fillStyle = colors.algColor.rgbString;
     for (const [row, col] of path) {
         ctx.fillRect(col * cellWidth, row * cellHeight, cellWidth, cellHeight);
     }
@@ -126,7 +297,8 @@ function getDataFromEvent(e:MouseEvent) : [number, number, number, number, numbe
 canvas.addEventListener("click", (e:MouseEvent) => {
 
     const [size, cellHeight, cellWidth, posX, posY, colorName] = getDataFromEvent(e)
-    maze[posY][posX] =  colors[colorName as keyof typeof colors].index;
+    const modi = modis[currentModi as keyof typeof modis]
+    maze[posY][posX] =  colors[modi as keyof typeof colors].index;
 
     drawMaze();
 });
@@ -153,17 +325,24 @@ canvas.addEventListener("mousemove", (e:MouseEvent) => {
     if(color == ""){
         return;
     }
-    ctx.fillStyle = 'rgba(0, 138, 255, 0.3)';
+    ctx.fillStyle = colors.hoverColor.rgbString
     ctx.fillRect(posX * cellWidth, posY * cellHeight, cellWidth, cellHeight);
 })
 
 clearWallsButton.addEventListener('click', () => {
-    const size = parseInt(sizeInput.value, 10); // Konvertiere den Wert von sizeInput in eine Ganzzahl
-    maze = Array.from({ length: size }, () => Array(size).fill(0)); // Setze das Labyrinth zurück
+    const size = getSize()
+    maze = Array.from({ length: size }, () => Array(size).fill(0));
     drawMaze(); // Zeichne das Labyrinth
 });
 
-function solveMaze(algorithm: string, maze: number[][]): { path: [number, number][], steps: [number, number][] } {
+modiSelect.addEventListener("change", (e:Event) => {
+    currentModi = modiSelect.value 
+    console.log(modiSelect.value)
+});
+
+
+function solveMaze(algorithm: string, maze: number[][]): { path: [number, number][], steps: stepsType } {
+    console.log(maze)
     const {path:path, steps: steps} = (function () { switch (algorithm) {
         case 'dfs':
           return solveDFS(maze)
