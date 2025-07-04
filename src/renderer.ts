@@ -45,6 +45,8 @@ export function setupDocumentListeners() {
     const algorithmSelect = document.getElementById("algorithm-select") as HTMLSelectElement;
     const modiSelect = document.getElementById("modi-select") as HTMLSelectElement;
     const sizeInput = document.getElementById("size-input") as HTMLInputElement;
+    const timeInput = document.getElementById("time-input") as HTMLInputElement;
+
     const generateMazeButton = document.getElementById("generate-maze") as HTMLButtonElement;
     const clearWallsButton = document.getElementById("clear-walls") as HTMLButtonElement;
     const solveMazeButton = document.getElementById("solve-maze") as HTMLButtonElement;
@@ -197,14 +199,14 @@ export function setupDocumentListeners() {
         ]
     ]
 
-    async function showSolve() {
+    async function showSolve(timeout: number = 50) {
         if (maze != null) {
             const { path: path, steps: steps }: { path: [number, number][], steps: stepsType } = solveMaze(algorithmSelect.value, maze);
             showingSolve = true
             for (let step of steps) {
                 drawPath(step.way, canvas, maze.length)
                 drawVisited(step.visited, canvas, maze.length)
-                await sleepNow(50)
+                await sleepNow(timeout);
                 drawMaze()
             }
             drawPath(path, canvas, maze.length);
@@ -213,7 +215,10 @@ export function setupDocumentListeners() {
     }
 
     solveMazeButton.addEventListener('click', async () => {
-        showSolve()
+        const timeout = parseInt(timeInput.value, 10);
+        const value = Math.min(Math.max(timeout, 1), 50);
+        timeInput.value = value.toString();
+        showSolve(value);
     });
 
     function getColorFromIndex(index: number) {

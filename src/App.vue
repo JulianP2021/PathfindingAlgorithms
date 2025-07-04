@@ -14,6 +14,7 @@
             <button id="clear-walls">Clear walls</button>
         </div>
         <div class="center">
+            Select draw mode:
             <select id="modi-select">
                 <option value="drawWalls">draw Walls</option>
                 <option value="drawStart">draw Start</option>
@@ -24,6 +25,11 @@
         <div class="center">
             <label for="size-input">Maze Size:</label>
             <input type="number" id="size-input" min="5" max="50" value="10" />
+
+        </div>
+        <div class="center">
+            <label for="time-input">Time (ms):</label>
+            <input type="number" id="time-input" min="1" max="50" value="10" />
 
         </div>
 
@@ -44,7 +50,7 @@
         </div>
 
         <canvas id="maze"></canvas>
-        
+
     </body>
 
     </html>
@@ -56,8 +62,8 @@ import { onMounted, onUnmounted } from 'vue';
 import { setupDocumentListeners } from './renderer.ts';
 
 onMounted(() => {
-  setupDocumentListeners();
-  console.log('Event listeners set up');
+    setupDocumentListeners();
+    console.log('Event listeners set up');
 });
 console.log('👋 This message is being logged by "App.vue", included via Vite');
 </script>

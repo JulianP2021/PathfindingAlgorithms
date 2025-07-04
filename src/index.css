@@ -7,10 +7,9 @@ body {
 
 canvas {
   display: flex;
-  
   margin: 0 auto;
-  width: 80vw;
-  height: 40vh;
+  width: min(65vw, 65vh);
+  height: min(65vw, 65vh);
 }
 
 p {
