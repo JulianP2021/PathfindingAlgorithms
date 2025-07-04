@@ -9,8 +9,7 @@
 
     <body>
         <h1>Pathfinding Visualizer</h1>
-        <p>Click and drag to draw walls, click on the grid to move the start and end points, and press space to
-            visualize the pathfinding algorithm.</p>
+        <p>Click to draw walls, click on the modi select to draw the start and endpoint.</p>
         <div class="center">
             <button id="clear-walls">Clear walls</button>
         </div>
