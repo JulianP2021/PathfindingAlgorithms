@@ -4,11 +4,13 @@
 
     <head>
         <meta charset="UTF-8" />
-        <title>Hello World</title>
+        <title>Pathfinding Visualizer</title>
     </head>
 
     <body>
-        <h1>Pathfinding Visualizer</h1>
+        <div class="background-title">
+            <h1>Pathfinding Visualizer</h1>
+        </div>
         <p>Click to draw walls, click on the modi select to draw the start and endpoint.</p>
         <div class="center">
             <button id="clear-walls">Clear walls</button>
@@ -32,14 +34,8 @@
             <input type="number" id="time-input" min="1" max="50" value="10" />
 
         </div>
-
-        <div class="center">
-            <button id="solve-maze">Solve maze</button>
-            <button id="generate-maze">Generate random maze</button>
-        </div>
-
-
         <br>
+
         <div class="center">
             <select id="algorithm-select">
                 <option value="dijkstra">Dijkstra</option>
@@ -48,6 +44,13 @@
                 <option value="dfs">Depth-First Search</option>
             </select>
         </div>
+
+        <div class="stretch">
+            <button id="solve-maze">Solve maze</button>
+            <button id="generate-maze">Generate random maze</button>
+        </div>
+
+        <br>
 
         <canvas id="maze"></canvas>
 

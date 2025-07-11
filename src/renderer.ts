@@ -76,134 +76,17 @@ export function setupDocumentListeners() {
     //y:x
     //let maze = Array.from({ length: getSize() }, () => Array(getSize()).fill(0));
 
-    let maze: number[][] = [
-        [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        ],
-        [
-            0,
-            0,
-            2,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        ],
-        [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        ],
-        [
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            1,
-            0,
-            1,
-            1
-        ],
-        [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            1,
-            0
-        ],
-        [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            1,
-            0
-        ],
-        [
-            0,
-            0,
-            0,
-            0,
-            1,
-            1,
-            1,
-            1,
-            1,
-            0
-        ],
-        [
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-            0,
-            0,
-            0,
-            0
-        ],
-        [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            3,
-            0,
-            0
-        ],
-        [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        ]
-    ]
+    let maze: number[][] = []
+    let stopped = false
 
     async function showSolve(timeout: number = 50) {
         if (maze != null) {
             const { path: path, steps: steps }: { path: [number, number][], steps: stepsType } = solveMaze(algorithmSelect.value, maze);
             showingSolve = true
             for (let step of steps) {
+                if (stopped) {
+                    return
+                }
                 drawPath(step.way, canvas, maze.length)
                 drawVisited(step.visited, canvas, maze.length)
                 await sleepNow(timeout);
@@ -215,9 +98,9 @@ export function setupDocumentListeners() {
     }
 
     solveMazeButton.addEventListener('click', async () => {
-        const timeout = parseInt(timeInput.value, 10);
-        const value = Math.min(Math.max(timeout, 1), 50);
+        const value = Math.min(parseInt(timeInput.max, 10), Math.max(parseInt(timeInput.min, 10), parseInt(timeInput.value, 10)));
         timeInput.value = value.toString();
+        stopped = false
         showSolve(value);
     });
 
@@ -239,11 +122,13 @@ export function setupDocumentListeners() {
     };
 
     function getSize() {
-        const size = parseInt(sizeInput.value, 10);
+        const size = Math.min(parseInt(sizeInput.max, 10), Math.max(parseInt(sizeInput.min, 10), parseInt(sizeInput.value, 10)));
+        sizeInput.value = size.toString()
         return size;
     }
 
     generateMazeButton.addEventListener('click', async () => {
+        stopped = true;
         const size = getSize();
         maze = generate(size);
         drawMaze();
