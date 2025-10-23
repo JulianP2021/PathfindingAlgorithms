@@ -22,7 +22,7 @@
     "@electron/fuses": "^1.8.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
-    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue": "^6.0.1",
     "electron": "^38.4.0",
     "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.30.0",
