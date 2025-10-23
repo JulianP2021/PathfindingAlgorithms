@@ -1,22 +1,8 @@
-import { stepToPath } from "../stepToPath";
 import { stepsType } from "../types";
+import { init, stepToPath } from "../utils";
 
 export function solveBFS(maze: number[][]) {
-    const size = maze.length;
-    let start: [number, number] = [0, 0];
-    let end: [number, number] = [0, 0];
-    for (let row = 0; row < size; row++) {
-        for (let col = 0; col < size; col++) {
-            if (maze[row][col] === 2) {
-                start = [row, col];
-                break;
-            }
-            if (maze[row][col] === 3) {
-                end = [row, col];
-                break;
-            }
-        }
-    }
+    const {size, start, end} = init(maze);
     const visited: boolean[][] = Array.from({ length: size }, () => Array(size).fill(false));
     const previous: [number, number][][] = Array.from({ length: size }, () => Array(size).fill(null));
     const queue: [number, number][] = [[start[0], start[1]]];
@@ -47,12 +33,6 @@ export function solveBFS(maze: number[][]) {
 
         }
     }
-    const path = [];
-    let current = end;
-
-    while (current) {
-        path.unshift(current);
-        current = previous[current[0]][current[1]];
-    }
+    const path = stepToPath(previous, end);
     return { path: path, steps: steps };
 }
