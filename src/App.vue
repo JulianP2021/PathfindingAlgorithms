@@ -47,7 +47,7 @@
 
         <main class="main">
             <header class="title-card">
-                <h1>Pathfinding Visualizer</h1>
+                <h1>Pathfinding Visualizer by Julian</h1>
             </header>
 
             <section class="canvas-wrap">
