@@ -1,7 +1,7 @@
 :root {
   /* Theme colors */
   --bg: #0b0f13; /* dark background */
-  --panel: #0f1720; /* slightly lighter panel */
+  --panel: #0c1216; /* slightly lighter panel (darker for contrast) */
   --muted: #9aa6b2;
   --accent: #4aa3ff;
   --accent-2: #7b61ff;
@@ -111,12 +111,90 @@ canvas {
   font-size: 1.4rem;
 }
 
-select, input[type="number"] {
+select, input[type="number"], input, textarea {
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--panel);
+  color: #e6eef6;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+select:focus, input[type="number"]:focus, input:focus, textarea:focus {
+  box-shadow: 0 4px 18px rgba(74,163,255,0.12);
+  border-color: rgba(74,163,255,0.9);
+}
+
+/* placeholders should be muted but readable */
+input::placeholder, textarea::placeholder {
+  color: rgba(230,238,246,0.5);
+}
+
+/* make sure selects show dark background in browsers that add inner white backgrounds */
+select::-ms-expand { display: none; }
+
+/* Custom select arrow (data-uri SVG) */
+select {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a8cfff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px 18px;
+  padding-right: 40px; /* make room for arrow */
+}
+
+/* Hide native number input spinners across browsers */
+/* Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Custom small stepper buttons next to number inputs */
+.number-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.number-input input[type="number"] {
+  flex: 1 1 auto;
+}
+.stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.step {
+  width: 34px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: rgba(255,255,255,0.02);
   color: #e6eef6;
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.step:active { transform: translateY(1px); }
+
+/* Improve contrast for primary buttons */
+.primary {
+  background: linear-gradient(180deg, #1f87ff, #155fbe);
+  color: #ffffff;
+}
+
+/* focus-visible for keyboard users */
+button:focus, input:focus, select:focus, textarea:focus {
+  outline: 3px solid rgba(74,163,255,0.16);
+  outline-offset: 2px;
 }
 
 

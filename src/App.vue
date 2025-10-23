@@ -20,12 +20,24 @@
 
             <div class="control-row">
                 <label for="size-input">Maze size</label>
-                <input type="number" id="size-input" min="5" max="50" value="10" />
+                <div class="number-input">
+                    <input type="number" id="size-input" min="5" max="50" value="10" />
+                    <div class="stepper">
+                        <button type="button" class="step step-up" aria-label="increase">+</button>
+                        <button type="button" class="step step-down" aria-label="decrease">−</button>
+                    </div>
+                </div>
             </div>
 
             <div class="control-row">
                 <label for="time-input">Delay (ms)</label>
-                <input type="number" id="time-input" min="1" max="200" value="10" />
+                <div class="number-input">
+                    <input type="number" id="time-input" min="1" max="200" value="10" />
+                    <div class="stepper">
+                        <button type="button" class="step step-up" aria-label="increase">+</button>
+                        <button type="button" class="step step-down" aria-label="decrease">−</button>
+                    </div>
+                </div>
             </div>
 
             <div class="control-row">

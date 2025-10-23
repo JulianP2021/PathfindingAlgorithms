@@ -319,6 +319,34 @@ export function setupDocumentListeners() {
 		currentModi = modiSelect.value;
 	});
 
+	// Custom steppers: delegate clicks on .step to increment/decrement nearby number input
+	document.addEventListener("click", e => {
+		const target = e.target as HTMLElement;
+		if (!target) return;
+
+		if (target.classList.contains("step")) {
+			// find the closest .number-input ancestor
+			const container = target.closest(".number-input");
+			if (!container) return;
+			const input = container.querySelector("input[type=number]") as HTMLInputElement | null;
+			if (!input) return;
+			const stepAmount = 1;
+			const min = input.min !== "" ? parseInt(input.min, 10) : undefined;
+			const max = input.max !== "" ? parseInt(input.max, 10) : undefined;
+			let value = input.value === "" ? 0 : parseInt(input.value, 10);
+			if (target.classList.contains("step-up")) {
+				value = isNaN(value) ? (min ?? 0) : value + stepAmount;
+				if (typeof max !== "undefined") value = Math.min(value, max);
+			} else if (target.classList.contains("step-down")) {
+				value = isNaN(value) ? (min ?? 0) : value - stepAmount;
+				if (typeof min !== "undefined") value = Math.max(value, min);
+			}
+			input.value = value.toString();
+			// trigger change for any listeners
+			input.dispatchEvent(new Event("change", { bubbles: true }));
+		}
+	});
+
 	function solveMaze(
 		algorithm: string,
 		maze: number[][]
