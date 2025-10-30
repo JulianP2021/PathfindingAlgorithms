@@ -68,6 +68,8 @@ export function setupDocumentListeners() {
 	const sleepNow = (delay: number) =>
 		new Promise(resolve => setTimeout(resolve, delay));
 
+	const stepsCountEl = document.getElementById("steps-count") as HTMLElement | null;
+
 	const colors = {
 		cleanColor: {
 			index: 0,
@@ -126,28 +128,33 @@ export function setupDocumentListeners() {
 	let stopped = false;
 
 	async function showSolve(timeout: number = 50) {
-		if (maze != null) {
-			const {
-				path: path,
-				steps: steps,
-			}: { path: [number, number][]; steps: stepsType } = solveMaze(
-				algorithmSelect.value,
-				maze
-			);
-			showingSolve = true;
-			for (let step of steps) {
-				if (stopped) {
-					return;
+			if (maze != null) {
+				const {
+					path: path,
+					steps: steps,
+				}: { path: [number, number][]; steps: stepsType } = solveMaze(
+					algorithmSelect.value,
+					maze
+				);
+				showingSolve = true;
+				if (stepsCountEl) stepsCountEl.textContent = `Solving: 0/${steps.length}`;
+				for (let i = 0; i < steps.length; i++) {
+					if (stopped) {
+						if (stepsCountEl) stepsCountEl.textContent = `Stopped at ${i}/${steps.length}`;
+						return;
+					}
+					const step = steps[i];
+					drawPath(step.way, canvas, maze.length);
+					drawVisited(step.visited, canvas, maze.length);
+					if (stepsCountEl) stepsCountEl.textContent = `Solving: ${i + 1}/${steps.length}`;
+					await sleepNow(timeout);
+					drawMaze();
 				}
-				drawPath(step.way, canvas, maze.length);
-				drawVisited(step.visited, canvas, maze.length);
-				await sleepNow(timeout);
-				drawMaze();
+				drawPath(path, canvas, maze.length);
+				if (stepsCountEl) stepsCountEl.textContent = `Steps: ${steps.length} — Path: ${path.length}`;
+				showingSolve = false;
 			}
-			drawPath(path, canvas, maze.length);
-			showingSolve = false;
 		}
-	}
 
 	solveMazeButton.addEventListener("click", async () => {
 		const value = Math.min(
@@ -190,6 +197,7 @@ export function setupDocumentListeners() {
 		const size = getSize();
 		maze = generate(size);
 		drawMaze();
+		if (stepsCountEl) stepsCountEl.textContent = 'Steps: —';
 	});
 
 	function getColorFromPixelData(data: Uint8ClampedArray) {
@@ -313,6 +321,7 @@ export function setupDocumentListeners() {
 		const size = getSize();
 		maze = Array.from({ length: size }, () => Array(size).fill(0));
 		drawMaze(); // Zeichne das Labyrinth
+		if (stepsCountEl) stepsCountEl.textContent = 'Steps: —';
 	});
 
 	modiSelect.addEventListener("change", (e: Event) => {
