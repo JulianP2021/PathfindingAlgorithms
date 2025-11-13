@@ -1,5 +1,12 @@
 import { init, stepToPath } from "../utils";
 import { stepsType } from "../types";
+import {
+  PriorityQueue,
+  MinPriorityQueue,
+  MaxPriorityQueue,
+  ICompare,
+  IGetCompareValue,
+} from '@datastructures-js/priority-queue';
 
 export function solveAStar(maze: number[][]) {
 	const { size, start, end } = init(maze);
@@ -12,10 +19,14 @@ export function solveAStar(maze: number[][]) {
 	const previous: [number, number][][] = Array.from({ length: size }, () =>
 		Array(size).fill(null)
 	);
-	const queue: [number, number, number][] = [[start[0], start[1], 0]];
+	// Car queue prioritizing newest, then cheapest
+	const queue = new PriorityQueue((a: [number, number, number], b: [number, number, number]) => {
+		return a[2] < b[2] ? -1 : 1;
+	});
+	queue.enqueue([start[0], start[1], 0]);
 	distance[start[0]][start[1]] = 0;
 	const steps: stepsType = [];
-	while (queue.length > 0) {
+	while (!queue.isEmpty()) {
 		const result = solveAStarInternal(
 			maze,
 			start,
@@ -43,12 +54,12 @@ function solveAStarInternal(
 	distance: number[][],
 	previous: [number, number][][],
 	size: number,
-	queue: [number, number, number][],
+	queue: PriorityQueue<[number, number, number]>,
 	steps: stepsType
 ) {
-	queue.sort((a, b) => a[2] - b[2]);
-    console.log(queue, steps);
-	const [row, col, dist] = queue.shift();
+	const [row, col, dist] = queue.dequeue();
+	console.log(dist);
+	
 	visited[row][col] = true;
 	steps.push({
 		way: stepToPath(previous, [row, col]),
@@ -68,11 +79,11 @@ function solveAStarInternal(
 			continue;
 		}
 		const newDist =
-			dist + Math.pow(2, Math.abs(r - end[0])) + Math.pow(2, Math.abs(c - end[1]));
+			dist + 1 + Math.pow(2, Math.abs(r - end[0])) + Math.pow(2, Math.abs(c - end[1]));
 		if (newDist < distance[r][c] && !visited[r][c]) {
 			distance[r][c] = newDist;
 			previous[r][c] = [row, col];
-			queue.push([r, c, newDist]);
+			queue.enqueue([r, c, newDist]);
 		}
 	}
 	return [row, col];
@@ -99,13 +110,15 @@ export function solveAStarBothSides(maze: number[][]): {
     const previous2: [number, number][][] = Array.from({ length: size }, () =>
 		Array(size).fill(null)
 	);
-	const queue1: [number, number, number][] = [[start[0], start[1], 0]];
-	const queue2: [number, number, number][] = [[end[0], end[1], 0]];
+	const queue1 = new PriorityQueue<[number, number, number]>((a, b) => a[2] - b[2]);
+	const queue2 = new PriorityQueue<[number, number, number]>((a, b) => a[2] - b[2]);
+	queue1.enqueue([start[0], start[1], 0]);
+	queue2.enqueue([end[0], end[1], 0]);
 	distance1[start[0]][start[1]] = 0;
 	distance2[end[0]][end[1]] = 0;
 	const steps: stepsType = [];
 	const meetingPoints: Map<string, [number, number][]> = new Map();
-	while (queue1.length > 0 || queue2.length > 0) {
+	while (!queue1.isEmpty() || !queue2.isEmpty()) {
 		const result1 = solveAStarInternal(
 			maze,
 			start,

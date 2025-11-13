@@ -21,7 +21,7 @@
             <div class="control-row">
                 <label for="size-input">Maze size</label>
                 <div class="number-input">
-                    <input type="number" id="size-input" min="5" max="100" value="10" />
+                    <input type="number" id="size-input" min="5" max="50" value="10" />
                     <div class="stepper">
                         <button type="button" class="step step-up" aria-label="increase">+</button>
                         <button type="button" class="step step-down" aria-label="decrease">−</button>

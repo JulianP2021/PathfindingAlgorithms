@@ -37,6 +37,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@datastructures-js/priority-queue": "^6.3.5",
     "electron-squirrel-startup": "^1.0.1",
     "vue": "^3.5.13"
   }
